@@ -11,11 +11,11 @@ Văn, điểm tiếng Anh
 - Hiển thị thông tin tất cả sinh viên.
 - Thông tin sinh viên có thể thiếu khi nhập, nhập
 thông tin của 100 sinh viên.
-BE: FastAPI
-FE1: HTML, CSS, Javascript
-FE2: Reactjs
-FE3: Desktop App
-Tiền xử lí dữ liệu: Pandas
+    - BE: FastAPI
+    - FE1: HTML, CSS, Javascript
+    - FE2: Reactjs
+    - FE3: Desktop App
+    - Tiền xử lí dữ liệu: Pandas
   
 ### **Đề riêng (group6):**
 Đề 6 nhóm 6 (FE2)
