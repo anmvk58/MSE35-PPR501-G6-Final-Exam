@@ -4,99 +4,98 @@ import { Link } from 'react-router-dom';
 import './StudentList.css';
 
 const StudentList = () => {
-  const [students, setStudents] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+    const [students, setStudents] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchStudents = async () => {
-      try {
-        setLoading(true);
-        const data = await mockApiService.getStudents();
-        setStudents(data);
-        setError(null);
-      } catch (err) {
-        setError('Failed to fetch students. Please try again later.');
-        console.error('Error fetching students:', err);
-      } finally {
-        setLoading(false);
-      }
+    useEffect(() => {
+        const fetchStudents = async () => {
+            try {
+                const data = await mockApiService.getStudents();
+                setStudents(data);
+                setError(null);
+            } catch (err) {
+                setError('Không thể tải danh sách sinh viên. Vui lòng thử lại sau.');
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchStudents();
+    }, []);
+
+    const handleDelete = async (id) => {
+        if (window.confirm('Bạn có chắc chắn muốn xóa sinh viên này?')) {
+            try {
+                await mockApiService.deleteStudent(id);
+                setStudents(prev => prev.filter(student => student.id !== id));
+            } catch (err) {
+                setError('Xóa sinh viên thất bại. Vui lòng thử lại.');
+                console.error(err);
+            }
+        }
     };
 
-    fetchStudents();
-  }, []);
+    return (
+        <div className="student-list-wrapper">
+            <div className="student-list-header">
+                <h1>📚 Danh sách sinh viên</h1>
+                <Link to="/add-student" className="btn btn-primary">➕ Thêm sinh viên</Link>
+            </div>
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this student?')) {
-      try {
-        await mockApiService.deleteStudent(id);
-        setStudents(students.filter(student => student.id !== id));
-      } catch (err) {
-        setError('Failed to delete student. Please try again later.');
-        console.error('Error deleting student:', err);
-      }
-    }
-  };
+            {loading && <div className="status loading">Đang tải dữ liệu...</div>}
+            {error && <div className="status error">{error}</div>}
 
-  if (loading) return <div className="loading">Loading students...</div>;
-  
-  if (error) return <div className="error">{error}</div>;
-
-  return (
-    <div className="student-list-container">
-      <div className="student-list-header">
-        <h2>Student List</h2>
-        <Link to="/add-student" className="add-student-btn">Add New Student</Link>
-      </div>
-      
-      {students.length === 0 ? (
-        <div className="no-students">No students found. Add a new student to get started.</div>
-      ) : (
-        <div className="table-responsive">
-          <table className="student-table">
-            <thead>
-              <tr>
-                <th>Student ID</th>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Email</th>
-                <th>Date of Birth</th>
-                <th>Hometown</th>
-                <th>Math Score</th>
-                <th>Literature Score</th>
-                <th>English Score</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {students.map((student) => (
-                <tr key={student.id}>
-                  <td>{student.id}</td>
-                  <td>{student.firstName}</td>
-                  <td>{student.lastName}</td>
-                  <td>{student.email}</td>
-                  <td>{new Date(student.dateOfBirth).toLocaleDateString()}</td>
-                  <td>{student.hometown}</td>
-                  <td>{student.mathScore}</td>
-                  <td>{student.literatureScore}</td>
-                  <td>{student.englishScore}</td>
-                  <td className="action-buttons">
-                    <Link to={`/edit-student/${student.id}`} className="edit-btn">Edit</Link>
-                    <button 
-                      onClick={() => handleDelete(student.id)} 
-                      className="delete-btn"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+            {!loading && !error && (
+                <>
+                    {students.length === 0 ? (
+                        <div className="status empty">Không có sinh viên nào. Hãy thêm mới!</div>
+                    ) : (
+                        <div className="table-container">
+                            <table className="student-table">
+                                <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Họ</th>
+                                    <th>Tên</th>
+                                    <th>Email</th>
+                                    <th>Ngày sinh</th>
+                                    <th>Quê quán</th>
+                                    <th>Toán</th>
+                                    <th>Văn</th>
+                                    <th>Anh</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {students.map(student => (
+                                    <tr key={student.id}>
+                                        <td>{student.id}</td>
+                                        <td>{student.firstName}</td>
+                                        <td>{student.lastName}</td>
+                                        <td>{student.email}</td>
+                                        <td>{new Date(student.dateOfBirth).toLocaleDateString()}</td>
+                                        <td>{student.hometown}</td>
+                                        <td>{student.mathScore}</td>
+                                        <td>{student.literatureScore}</td>
+                                        <td>{student.englishScore}</td>
+                                        <td>
+                                            <div className="action-group">
+                                                <Link to={`/edit-student/${student.id}`} className="btn btn-edit">✏️</Link>
+                                                <button onClick={() => handleDelete(student.id)} className="btn btn-delete">🗑️</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+                </>
+            )}
         </div>
-      )}
-    </div>
-  );
+    );
 };
 
 export default StudentList;

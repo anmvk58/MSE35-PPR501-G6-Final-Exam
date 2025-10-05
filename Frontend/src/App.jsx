@@ -1,30 +1,26 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from './hooks/useAuth';
-import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
-import Analytics from './pages/Analytics';
-import ApiTest from './components/ApiTest';
-// Import our new components
-import StudentList from './components/StudentList';
-import AddStudent from './components/AddStudent';
-import EditStudent from './components/EditStudent';
+import React from "react";
+import { Routes, Route } from "react-router-dom";
+import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
+import Analytics from "./pages/Analytics";
+import ApiTest from "./components/ApiTest";
+import StudentList from "./components/StudentList";
+import AddStudent from "./components/AddStudent";
+import EditStudent from "./components/EditStudent";
 
 function App() {
-  const { user } = useAuth();
-
-  return (
-    <Routes>
-      <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
-      <Route path="/" element={user ? <Dashboard /> : <Navigate to="/login" />}>
-        <Route index element={<Navigate to="/students" />} />
-        <Route path="students" element={<StudentList />} />
-        <Route path="add-student" element={<AddStudent />} />
-        <Route path="edit-student/:id" element={<EditStudent />} />
-        <Route path="analytics" element={<Analytics />} />
-        <Route path="api-test" element={<ApiTest />} />
-      </Route>
-    </Routes>
-  );
+    return (
+        <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/analytics" element={<Analytics />} />
+            <Route path="/api-test" element={<ApiTest />} />
+            <Route path="/students" element={<StudentList />} />
+            <Route path="/add-student" element={<AddStudent />} />
+            <Route path="/edit-student/:id" element={<EditStudent />} />
+            {/*<Route path="*" element={<h1>404 - Page Not Found</h1>} />*/}
+        </Routes>
+    );
 }
 
 export default App;

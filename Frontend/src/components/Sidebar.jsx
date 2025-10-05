@@ -1,51 +1,30 @@
 import { NavLink } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../hooks/useAuth.jsx';
+import './Sidebar.css';
 
 const Sidebar = () => {
-  const { logout } = useAuth();
+    const { logout } = useAuth();
 
-  return (
-    <div className="sidebar">
-      <h2 className="mb-4">Student Management</h2>
-      <nav>
-        <ul style={{ listStyle: 'none', padding: 0 }}>
-          <li className="mb-2">
-            <NavLink to="/" className={({ isActive }) => 
-              isActive ? "nav-link active" : "nav-link"
-            } end>
-              Students
-            </NavLink>
-          </li>
-          <li className="mb-2">
-            <NavLink to="/students/add" className={({ isActive }) => 
-              isActive ? "nav-link active" : "nav-link"
-            }>
-              Add Student
-            </NavLink>
-          </li>
-          <li className="mb-2">
-            <NavLink to="/analytics" className={({ isActive }) => 
-              isActive ? "nav-link active" : "nav-link"
-            }>
-              Analytics
-            </NavLink>
-          </li>
-          <li className="mb-2">
-            <NavLink to="/api-test" className={({ isActive }) => 
-              isActive ? "nav-link active" : "nav-link"
-            }>
-              API Test
-            </NavLink>
-          </li>
-          <li className="mt-4">
-            <button onClick={logout} className="btn btn-danger">
-              Logout
-            </button>
-          </li>
-        </ul>
-      </nav>
-    </div>
-  );
+    return (
+        <aside className="sidebar">
+            <h2 className="sidebar-title">🎓 Student Management</h2>
+            <nav className="sidebar-nav">
+                <NavLink to="/" end className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+                    📋 Students
+                </NavLink>
+                <NavLink to="/students/add" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+                    ➕ Add Student
+                </NavLink>
+                <NavLink to="/analytics" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+                    📊 Analytics
+                </NavLink>
+                <NavLink to="/api-test" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+                    🔌 API Test
+                </NavLink>
+                <button onClick={logout} className="btn-logout">🚪 Logout</button>
+            </nav>
+        </aside>
+    );
 };
 
 export default Sidebar;
