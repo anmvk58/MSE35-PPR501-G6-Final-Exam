@@ -1,14 +1,14 @@
-import 'src/global.css';
+import './global.css';
 import "bootstrap/dist/css/bootstrap.css";
-import "src/assets/now-ui/scss/now-ui-dashboard.scss";
-import "src/assets/now-ui/css/demo.css";
-import "src/assets/css/mse35-dashboard.css";
+import "./assets/now-ui/scss/now-ui-dashboard.scss";
+import "./assets/now-ui/css/demo.css";
+import "./assets/css/mse35-dashboard.css";
 
 import { useEffect } from 'react';
 import { Routes, Route, Navigate } from "react-router-dom";
 
-import { usePathname } from 'src/routes/hooks';
-import { ThemeProvider } from 'src/theme/theme-provider';
+import { usePathname } from './routes/hooks';
+import { ThemeProvider } from './theme/theme-provider';
 
 import Login from "./pages/Login";
 import AdminLayout from "./layouts/AdminLayout";
