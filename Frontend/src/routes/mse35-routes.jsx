@@ -1,6 +1,9 @@
 import Dashboard from "../pages/Dashboard";
 import Analytics from "../pages/Analytics";
 import StudentList from "../pages/StudentList.jsx";
+import AddStudent from "../components/AddStudent.jsx";
+import EditStudent from "../components/EditStudent.jsx";
+import ApiTest from "../components/ApiTest.jsx";
 
 
 

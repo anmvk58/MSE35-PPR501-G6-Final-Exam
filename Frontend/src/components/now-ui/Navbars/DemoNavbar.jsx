@@ -1,21 +1,21 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
-  Collapse,
-  Navbar,
-  NavbarToggler,
-  NavbarBrand,
-  Nav,
-  NavItem,
-  Dropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-  Container,
-  InputGroup,
-  InputGroupText,
-  InputGroupAddon,
-  Input,
+    Collapse,
+    Navbar,
+    NavbarToggler,
+    NavbarBrand,
+    Nav,
+    NavItem,
+    Dropdown,
+    DropdownToggle,
+    DropdownMenu,
+    DropdownItem,
+    Container,
+    InputGroup,
+    InputGroupText,
+    // InputGroupAddon,
+    Input,
 } from "reactstrap";
 
 import { mse35Routes } from "../../../routes/mse35-routes.jsx";
@@ -125,11 +125,11 @@ function DemoNavbar(props) {
           <form>
             <InputGroup className="no-border">
               <Input placeholder="Search..." />
-              <InputGroupAddon addonType="append">
-                <InputGroupText>
+              {/*<InputGroupAddon addonType="append">*/}
+              {/*  <InputGroupText>*/}
                   <i className="now-ui-icons ui-1_zoom-bold" />
-                </InputGroupText>
-              </InputGroupAddon>
+                {/*</InputGroupText>*/}
+              {/*</InputGroupAddon>*/}
             </InputGroup>
           </form>
           <Nav navbar>
@@ -152,7 +152,7 @@ function DemoNavbar(props) {
                   <span className="d-lg-none d-md-block">Some Actions</span>
                 </p>
               </DropdownToggle>
-              <DropdownMenu right>
+              <DropdownMenu end>
                 <DropdownItem tag="a">Action</DropdownItem>
                 <DropdownItem tag="a">Another Action</DropdownItem>
                 <DropdownItem tag="a">Something else here</DropdownItem>

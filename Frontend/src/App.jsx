@@ -28,7 +28,7 @@ function App() {
                 <Route path="/" element={<Login />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/*" element={<AdminLayout />}>
-                    <Route index element={<Dashboard />} />
+                    <Route index element={<Login />} />
                     <Route path="dashboard" element={<Dashboard />} />
                     <Route path="analytics" element={<Analytics />} />
                     <Route path="api-test" element={<ApiTest />} />

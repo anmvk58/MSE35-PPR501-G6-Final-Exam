@@ -1,17 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import {
-    Row,
-    Col,
-    Card,
-    CardHeader,
-    CardBody,
-    CardTitle,
-    Table,
-    Button,
-    Alert,
-} from 'reactstrap';
-
+import { Container,Spinner,Table, Button} from 'reactstrap';
+import { Box, Stack, Typography} from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
 import mockApiService from '../utils/mockApi';
 
 const StudentList = () => {
@@ -50,10 +41,8 @@ const StudentList = () => {
 
     if (loading) {
         return (
-            <Container maxWidth="lg">
-                <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
-                    <CircularProgress />
-                </Box>
+            <Container className="d-flex justify-content-center align-items-center" style={{ minHeight: "400px" }}>
+                <Spinner color="primary" />
             </Container>
         );
     }
@@ -71,7 +60,7 @@ const StudentList = () => {
     return (
         <Container maxWidth="lg">
             <Box sx={{ py: 3 }}>
-                <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
+                <Stack direction="column" spacing={2} alignItems="center">
                     <Typography variant="h4" component="h1">
                         📚 Danh sách sinh viên
                     </Typography>
@@ -160,4 +149,4 @@ const StudentList = () => {
     );
 };
 
-export default StudentList;
+export default StudentList.jsx;

@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { useStudents } from '../hooks/useStudents';
 import Sidebar from "../components/now-ui/Sidebar/Sidebar.jsx";
 
-
 const StudentList = () => {
     const { students, deleteStudent } = useStudents();
     const [searchTerm, setSearchTerm] = useState('');
