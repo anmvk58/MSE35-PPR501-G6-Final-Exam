@@ -1,3 +1,4 @@
+//mockApi
 // Mock API service for student management
 let students = [
   {

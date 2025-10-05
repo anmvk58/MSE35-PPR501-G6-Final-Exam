@@ -1,7 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import mockApiService from '../utils/mockApi';
 import { Link } from 'react-router-dom';
-import './StudentList.css';
+import {
+    Row,
+    Col,
+    Card,
+    CardHeader,
+    CardBody,
+    CardTitle,
+    Table,
+    Button,
+    Alert,
+} from 'reactstrap';
+
+import mockApiService from '../utils/mockApi';
 
 const StudentList = () => {
     const [students, setStudents] = useState([]);
@@ -37,64 +48,115 @@ const StudentList = () => {
         }
     };
 
+    if (loading) {
+        return (
+            <Container maxWidth="lg">
+                <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+                    <CircularProgress />
+                </Box>
+            </Container>
+        );
+    }
+
+    if (error) {
+        return (
+            <Container maxWidth="lg">
+                <Alert severity="error" sx={{ mt: 2 }}>
+                    {error}
+                </Alert>
+            </Container>
+        );
+    }
+
     return (
-        <div className="student-list-wrapper">
-            <div className="student-list-header">
-                <h1>📚 Danh sách sinh viên</h1>
-                <Link to="/add-student" className="btn btn-primary">➕ Thêm sinh viên</Link>
-            </div>
+        <Container maxWidth="lg">
+            <Box sx={{ py: 3 }}>
+                <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
+                    <Typography variant="h4" component="h1">
+                        📚 Danh sách sinh viên
+                    </Typography>
+                    <Button
+                        component={Link}
+                        to="/add-student"
+                        variant="contained"
+                        startIcon={<AddIcon />}
+                        sx={{ ml: 2 }}
+                    >
+                        Thêm sinh viên
+                    </Button>
+                </Stack>
 
-            {loading && <div className="status loading">Đang tải dữ liệu...</div>}
-            {error && <div className="status error">{error}</div>}
-
-            {!loading && !error && (
-                <>
-                    {students.length === 0 ? (
-                        <div className="status empty">Không có sinh viên nào. Hãy thêm mới!</div>
-                    ) : (
-                        <div className="table-container">
-                            <table className="student-table">
-                                <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Họ</th>
-                                    <th>Tên</th>
-                                    <th>Email</th>
-                                    <th>Ngày sinh</th>
-                                    <th>Quê quán</th>
-                                    <th>Toán</th>
-                                    <th>Văn</th>
-                                    <th>Anh</th>
-                                    <th>Thao tác</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {students.map(student => (
-                                    <tr key={student.id}>
-                                        <td>{student.id}</td>
-                                        <td>{student.firstName}</td>
-                                        <td>{student.lastName}</td>
-                                        <td>{student.email}</td>
-                                        <td>{new Date(student.dateOfBirth).toLocaleDateString()}</td>
-                                        <td>{student.hometown}</td>
-                                        <td>{student.mathScore}</td>
-                                        <td>{student.literatureScore}</td>
-                                        <td>{student.englishScore}</td>
-                                        <td>
-                                            <div className="action-group">
-                                                <Link to={`/edit-student/${student.id}`} className="btn btn-edit">✏️</Link>
-                                                <button onClick={() => handleDelete(student.id)} className="btn btn-delete">🗑️</button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
-                </>
-            )}
-        </div>
+                {students.length === 0 ? (
+                    <Card>
+                        <CardContent>
+                            <Typography variant="h6" textAlign="center" color="text.secondary">
+                                Không có sinh viên nào. Hãy thêm mới!
+                            </Typography>
+                        </CardContent>
+                    </Card>
+                ) : (
+                    <Card>
+                        <TableContainer component={Paper}>
+                            <Table>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>ID</TableCell>
+                                        <TableCell>Họ</TableCell>
+                                        <TableCell>Tên</TableCell>
+                                        <TableCell>Email</TableCell>
+                                        <TableCell>Ngày sinh</TableCell>
+                                        <TableCell>Quê quán</TableCell>
+                                        <TableCell align="center">Toán</TableCell>
+                                        <TableCell align="center">Văn</TableCell>
+                                        <TableCell align="center">Anh</TableCell>
+                                        <TableCell align="center">Thao tác</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {students.map((student) => (
+                                        <TableRow
+                                            key={student.id}
+                                            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                        >
+                                            <TableCell>{student.id}</TableCell>
+                                            <TableCell>{student.firstName}</TableCell>
+                                            <TableCell>{student.lastName}</TableCell>
+                                            <TableCell>{student.email}</TableCell>
+                                            <TableCell>
+                                                {new Date(student.dateOfBirth).toLocaleDateString()}
+                                            </TableCell>
+                                            <TableCell>{student.hometown}</TableCell>
+                                            <TableCell align="center">{student.mathScore}</TableCell>
+                                            <TableCell align="center">{student.literatureScore}</TableCell>
+                                            <TableCell align="center">{student.englishScore}</TableCell>
+                                            <TableCell align="center">
+                                                <Stack direction="row" spacing={1} justifyContent="center">
+                                                    <IconButton
+                                                        component={Link}
+                                                        to={`/edit-student/${student.id}`}
+                                                        color="primary"
+                                                        size="small"
+                                                    >
+                                                        <EditIcon />
+                                                    </IconButton>
+                                                    <IconButton
+                                                        onClick={() => handleDelete(student.id)}
+                                                        color="error"
+                                                        size="small"
+                                                    >
+                                                        <DeleteIcon />
+                                                    </IconButton>
+                                                </Stack>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </Card>
+                )}
+            </Box>
+        </Container>
     );
 };
 

@@ -1,219 +1,391 @@
-import { useStudents } from '../hooks/useStudents';
-import { useState, useEffect } from 'react';
-import '../assets/analytics.css';
+import React, { useState, useEffect } from 'react';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  ArcElement,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+import { Bar, Pie, Line } from 'react-chartjs-2';
+import mockApiService from '../utils/mockApi';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  ArcElement,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const Analytics = () => {
-  const { students } = useStudents();
-  const [chartData, setChartData] = useState(null);
+  const [students, setStudents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (students.length > 0) {
-      // Prepare data for visualization
-      const averageScores = {
-        math: 0,
-        literature: 0,
-        english: 0
-      };
-      
-      students.forEach(student => {
-        averageScores.math += parseFloat(student.mathScore || 0);
-        averageScores.literature += parseFloat(student.literatureScore || 0);
-        averageScores.english += parseFloat(student.englishScore || 0);
-      });
-      
-      // Calculate averages
-      averageScores.math = (averageScores.math / students.length).toFixed(2);
-      averageScores.literature = (averageScores.literature / students.length).toFixed(2);
-      averageScores.english = (averageScores.english / students.length).toFixed(2);
-      
-      setChartData(averageScores);
+    fetchStudents();
+  }, []);
+
+  const fetchStudents = async () => {
+    try {
+      setLoading(true);
+      const data = await mockApiService.getStudents();
+      setStudents(data);
+    } catch (err) {
+      setError('Không thể tải dữ liệu sinh viên');
+      console.error('Error fetching students:', err);
+    } finally {
+      setLoading(false);
     }
-  }, [students]);
-
-  // Function to get performance category
-  const getPerformanceCategory = (score) => {
-    if (score >= 8.5) return 'Excellent';
-    if (score >= 7) return 'Good';
-    if (score >= 5.5) return 'Average';
-    if (score >= 4) return 'Below Average';
-    return 'Poor';
   };
 
-  // Calculate performance distribution
-  const calculatePerformanceDistribution = () => {
-    const distribution = {
-      excellent: 0,
-      good: 0,
-      average: 0,
-      belowAverage: 0,
-      poor: 0
+  // Calculate statistics
+  const calculateStats = () => {
+    if (students.length === 0) return null;
+
+    const stats = {
+      totalStudents: students.length,
+      avgMathScore: 0,
+      avgLiteratureScore: 0,
+      avgEnglishScore: 0,
+      avgOverallScore: 0,
+      excellentStudents: 0,
+      goodStudents: 0,
+      averageStudents: 0,
+      weakStudents: 0,
     };
-    
+
+    let totalMath = 0, totalLiterature = 0, totalEnglish = 0;
+
     students.forEach(student => {
-      const avgScore = (
-        parseFloat(student.mathScore || 0) + 
-        parseFloat(student.literatureScore || 0) + 
-        parseFloat(student.englishScore || 0)
-      ) / 3;
+      const math = parseFloat(student.mathScore) || 0;
+      const literature = parseFloat(student.literatureScore) || 0;
+      const english = parseFloat(student.englishScore) || 0;
+
+      totalMath += math;
+      totalLiterature += literature;
+      totalEnglish += english;
+
+      const avg = (math + literature + english) / 3;
       
-      const category = getPerformanceCategory(avgScore);
-      
-      switch(category) {
-        case 'Excellent':
-          distribution.excellent++;
-          break;
-        case 'Good':
-          distribution.good++;
-          break;
-        case 'Average':
-          distribution.average++;
-          break;
-        case 'Below Average':
-          distribution.belowAverage++;
-          break;
-        case 'Poor':
-          distribution.poor++;
-          break;
-        default:
-          break;
-      }
+      if (avg >= 8) stats.excellentStudents++;
+      else if (avg >= 6.5) stats.goodStudents++;
+      else if (avg >= 5) stats.averageStudents++;
+      else stats.weakStudents++;
     });
-    
-    return distribution;
+
+    stats.avgMathScore = (totalMath / students.length).toFixed(2);
+    stats.avgLiteratureScore = (totalLiterature / students.length).toFixed(2);
+    stats.avgEnglishScore = (totalEnglish / students.length).toFixed(2);
+    stats.avgOverallScore = ((totalMath + totalLiterature + totalEnglish) / (students.length * 3)).toFixed(2);
+
+    return stats;
   };
 
-  // Get top performers
-  const getTopPerformers = () => {
-    return [...students]
-      .map(student => ({
-        ...student,
-        averageScore: (
-          (parseFloat(student.mathScore || 0) + 
-           parseFloat(student.literatureScore || 0) + 
-           parseFloat(student.englishScore || 0)) / 3
-        ).toFixed(2)
-      }))
-      .sort((a, b) => b.averageScore - a.averageScore)
-      .slice(0, 5);
+  const stats = calculateStats();
+
+  // Chart data
+  const subjectScoresData = {
+    labels: ['Toán', 'Văn', 'Anh'],
+    datasets: [
+      {
+        label: 'Điểm trung bình',
+        data: stats ? [stats.avgMathScore, stats.avgLiteratureScore, stats.avgEnglishScore] : [],
+        backgroundColor: [
+          'rgba(249, 99, 50, 0.8)',
+          'rgba(255, 193, 7, 0.8)',
+          'rgba(52, 144, 220, 0.8)',
+        ],
+        borderColor: [
+          'rgba(249, 99, 50, 1)',
+          'rgba(255, 193, 7, 1)',
+          'rgba(52, 144, 220, 1)',
+        ],
+        borderWidth: 2,
+      },
+    ],
   };
 
-  if (students.length === 0) {
+  const performanceDistributionData = {
+    labels: ['Xuất sắc (≥8)', 'Khá (6.5-7.9)', 'Trung bình (5-6.4)', 'Yếu (<5)'],
+    datasets: [
+      {
+        data: stats ? [stats.excellentStudents, stats.goodStudents, stats.averageStudents, stats.weakStudents] : [],
+        backgroundColor: [
+          'rgba(40, 167, 69, 0.8)',
+          'rgba(255, 193, 7, 0.8)',
+          'rgba(249, 99, 50, 0.8)',
+          'rgba(220, 53, 69, 0.8)',
+        ],
+        borderColor: [
+          'rgba(40, 167, 69, 1)',
+          'rgba(255, 193, 7, 1)',
+          'rgba(249, 99, 50, 1)',
+          'rgba(220, 53, 69, 1)',
+        ],
+        borderWidth: 2,
+      },
+    ],
+  };
+
+  const chartOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top',
+      },
+      title: {
+        display: false,
+      },
+    },
+  };
+
+  if (loading) {
     return (
-      <div className="card">
-        <h2>Analytics</h2>
-        <p>No student data available for analysis. Please add students first.</p>
+      <div className="content">
+        <div className="row">
+          <div className="col-md-12">
+            <div className="card">
+              <div className="card-body text-center">
+                <div className="spinner-border text-primary" role="status">
+                  <span className="sr-only">Đang tải...</span>
+                </div>
+                <p className="mt-3">Đang tải dữ liệu...</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
 
-  const performanceDistribution = calculatePerformanceDistribution();
-  const topPerformers = getTopPerformers();
+  if (error) {
+    return (
+      <div className="content">
+        <div className="row">
+          <div className="col-md-12">
+            <div className="alert alert-danger" role="alert">
+              <h4 className="alert-heading">Lỗi!</h4>
+              <p>{error}</p>
+              <hr />
+              <p className="mb-0">
+                <button className="btn btn-outline-danger" onClick={fetchStudents}>
+                  <i className="now-ui-icons loader_refresh"></i> Thử lại
+                </button>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!stats || students.length === 0) {
+    return (
+      <div className="content">
+        <div className="row">
+          <div className="col-md-12">
+            <div className="card">
+              <div className="card-body text-center">
+                <i className="now-ui-icons files_single-copy-04 text-muted" style={{ fontSize: '3rem' }}></i>
+                <h4 className="mt-3">Không có dữ liệu</h4>
+                <p className="text-muted">Chưa có sinh viên nào trong hệ thống để phân tích.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div>
-      <h2>Student Performance Analytics</h2>
-      
-      <div className="analytics-grid">
-        {/* Average Scores Card */}
-        <div className="card">
-          <h3>Average Scores</h3>
-          {chartData && (
-            <div className="chart-container">
-              <div className="bar-chart">
-                <div className="bar-container">
-                  <div className="bar-label">Math</div>
-                  <div className="bar" style={{ width: `${chartData.math * 10}%`, backgroundColor: '#4361ee' }}>
-                    {chartData.math}
+    <div className="content">
+      <div className="row">
+        <div className="col-lg-3 col-md-6 col-sm-6">
+          <div className="card card-stats">
+            <div className="card-body">
+              <div className="row">
+                <div className="col-5 col-md-4">
+                  <div className="icon-big text-center icon-warning">
+                    <i className="now-ui-icons users_single-02 text-warning"></i>
                   </div>
                 </div>
-                <div className="bar-container">
-                  <div className="bar-label">Literature</div>
-                  <div className="bar" style={{ width: `${chartData.literature * 10}%`, backgroundColor: '#3a0ca3' }}>
-                    {chartData.literature}
-                  </div>
-                </div>
-                <div className="bar-container">
-                  <div className="bar-label">English</div>
-                  <div className="bar" style={{ width: `${chartData.english * 10}%`, backgroundColor: '#7209b7' }}>
-                    {chartData.english}
+                <div className="col-7 col-md-8">
+                  <div className="numbers">
+                    <p className="card-category">Tổng số sinh viên</p>
+                    <p className="card-title">{stats.totalStudents}</p>
                   </div>
                 </div>
               </div>
             </div>
-          )}
-        </div>
-        
-        {/* Performance Distribution Card */}
-        <div className="card">
-          <h3>Performance Distribution</h3>
-          <div className="distribution-chart">
-            <div className="distribution-item">
-              <div className="distribution-label">Excellent</div>
-              <div className="distribution-bar" style={{ 
-                width: `${(performanceDistribution.excellent / students.length) * 100}%`,
-                backgroundColor: '#06d6a0'
-              }}>
-                {performanceDistribution.excellent}
-              </div>
-            </div>
-            <div className="distribution-item">
-              <div className="distribution-label">Good</div>
-              <div className="distribution-bar" style={{ 
-                width: `${(performanceDistribution.good / students.length) * 100}%`,
-                backgroundColor: '#1b9aaa'
-              }}>
-                {performanceDistribution.good}
-              </div>
-            </div>
-            <div className="distribution-item">
-              <div className="distribution-label">Average</div>
-              <div className="distribution-bar" style={{ 
-                width: `${(performanceDistribution.average / students.length) * 100}%`,
-                backgroundColor: '#f9c74f'
-              }}>
-                {performanceDistribution.average}
-              </div>
-            </div>
-            <div className="distribution-item">
-              <div className="distribution-label">Below Average</div>
-              <div className="distribution-bar" style={{ 
-                width: `${(performanceDistribution.belowAverage / students.length) * 100}%`,
-                backgroundColor: '#f8961e'
-              }}>
-                {performanceDistribution.belowAverage}
-              </div>
-            </div>
-            <div className="distribution-item">
-              <div className="distribution-label">Poor</div>
-              <div className="distribution-bar" style={{ 
-                width: `${(performanceDistribution.poor / students.length) * 100}%`,
-                backgroundColor: '#ef476f'
-              }}>
-                {performanceDistribution.poor}
+            <div className="card-footer">
+              <hr />
+              <div className="stats">
+                <i className="now-ui-icons arrows-1_refresh-69"></i>
+                Cập nhật vừa xong
               </div>
             </div>
           </div>
         </div>
         
-        {/* Top Performers Card */}
-        <div className="card">
-          <h3>Top Performers</h3>
-          <table>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Average Score</th>
-              </tr>
-            </thead>
-            <tbody>
-              {topPerformers.map(student => (
-                <tr key={student.id}>
-                  <td>{student.firstName} {student.lastName}</td>
-                  <td>{student.averageScore}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="col-lg-3 col-md-6 col-sm-6">
+          <div className="card card-stats">
+            <div className="card-body">
+              <div className="row">
+                <div className="col-5 col-md-4">
+                  <div className="icon-big text-center icon-warning">
+                    <i className="now-ui-icons education_atom text-success"></i>
+                  </div>
+                </div>
+                <div className="col-7 col-md-8">
+                  <div className="numbers">
+                    <p className="card-category">Điểm TB Toán</p>
+                    <p className="card-title">{stats.avgMathScore}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="card-footer">
+              <hr />
+              <div className="stats">
+                <i className="now-ui-icons arrows-1_refresh-69"></i>
+                Cập nhật vừa xong
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="col-lg-3 col-md-6 col-sm-6">
+          <div className="card card-stats">
+            <div className="card-body">
+              <div className="row">
+                <div className="col-5 col-md-4">
+                  <div className="icon-big text-center icon-warning">
+                    <i className="now-ui-icons files_paper text-info"></i>
+                  </div>
+                </div>
+                <div className="col-7 col-md-8">
+                  <div className="numbers">
+                    <p className="card-category">Điểm TB Văn</p>
+                    <p className="card-title">{stats.avgLiteratureScore}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="card-footer">
+              <hr />
+              <div className="stats">
+                <i className="now-ui-icons arrows-1_refresh-69"></i>
+                Cập nhật vừa xong
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="col-lg-3 col-md-6 col-sm-6">
+          <div className="card card-stats">
+            <div className="card-body">
+              <div className="row">
+                <div className="col-5 col-md-4">
+                  <div className="icon-big text-center icon-warning">
+                    <i className="now-ui-icons tech_world text-primary"></i>
+                  </div>
+                </div>
+                <div className="col-7 col-md-8">
+                  <div className="numbers">
+                    <p className="card-category">Điểm TB Anh</p>
+                    <p className="card-title">{stats.avgEnglishScore}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="card-footer">
+              <hr />
+              <div className="stats">
+                <i className="now-ui-icons arrows-1_refresh-69"></i>
+                Cập nhật vừa xong
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div className="row">
+        <div className="col-md-6">
+          <div className="card">
+            <div className="card-header">
+              <h4 className="card-title">📊 Điểm trung bình theo môn</h4>
+            </div>
+            <div className="card-body">
+              <Bar data={subjectScoresData} options={chartOptions} />
+            </div>
+          </div>
+        </div>
+        
+        <div className="col-md-6">
+          <div className="card">
+            <div className="card-header">
+              <h4 className="card-title">🎯 Phân bố kết quả học tập</h4>
+            </div>
+            <div className="card-body">
+              <Pie data={performanceDistributionData} options={chartOptions} />
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div className="row">
+        <div className="col-md-12">
+          <div className="card">
+            <div className="card-header">
+              <h4 className="card-title">📈 Tổng quan điểm số</h4>
+            </div>
+            <div className="card-body">
+              <div className="row">
+                <div className="col-md-3 text-center">
+                  <div className="stat-item">
+                    <h3 className="text-success">{stats.excellentStudents}</h3>
+                    <p>Xuất sắc (≥8.0)</p>
+                  </div>
+                </div>
+                <div className="col-md-3 text-center">
+                  <div className="stat-item">
+                    <h3 className="text-warning">{stats.goodStudents}</h3>
+                    <p>Khá (6.5-7.9)</p>
+                  </div>
+                </div>
+                <div className="col-md-3 text-center">
+                  <div className="stat-item">
+                    <h3 className="text-info">{stats.averageStudents}</h3>
+                    <p>Trung bình (5.0-6.4)</p>
+                  </div>
+                </div>
+                <div className="col-md-3 text-center">
+                  <div className="stat-item">
+                    <h3 className="text-danger">{stats.weakStudents}</h3>
+                    <p>Yếu (&lt;5.0)</p>
+                  </div>
+                </div>
+              </div>
+              
+              <hr />
+              
+              <div className="row">
+                <div className="col-md-12 text-center">
+                  <h4>Điểm trung bình chung: <span className="text-primary">{stats.avgOverallScore}</span></h4>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

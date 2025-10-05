@@ -1,35 +1,22 @@
-import { createContext, useState, useEffect } from 'react';
+import { createContext, useState } from 'react';
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // Check if user is logged in from localStorage
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+  const login = (username, password) => {
+    if (username === 'admin' && password === '123') {
+      setUser({ name: 'Admin User', username });
+      return true;
     }
-    setLoading(false);
-  }, []);
-
-  const login = (userData) => {
-    // In a real app, you would validate credentials with a backend
-    // For this demo, we'll just store the user in localStorage
-    localStorage.setItem('user', JSON.stringify(userData));
-    setUser(userData);
-    return true;
+    return false;
   };
 
-  const logout = () => {
-    localStorage.removeItem('user');
-    setUser(null);
-  };
+  const logout = () => setUser(null);
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

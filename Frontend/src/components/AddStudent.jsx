@@ -1,7 +1,21 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  TextField,
+  Button,
+  Grid,
+  Alert,
+  Container,
+  Stack,
+  CircularProgress,
+} from '@mui/material';
+import { Save as SaveIcon, Cancel as CancelIcon } from '@mui/icons-material';
+
 import mockApiService from '../utils/mockApi';
-import './AddStudent.css';
 
 const AddStudent = () => {
   const navigate = useNavigate();
@@ -24,33 +38,33 @@ const AddStudent = () => {
   const validateForm = () => {
     const errors = {};
     
-    if (!formData.firstName.trim()) errors.firstName = 'First name is required';
-    if (!formData.lastName.trim()) errors.lastName = 'Last name is required';
+    if (!formData.firstName.trim()) errors.firstName = 'Họ là bắt buộc';
+    if (!formData.lastName.trim()) errors.lastName = 'Tên là bắt buộc';
     
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!formData.email.trim()) {
-      errors.email = 'Email is required';
+      errors.email = 'Email là bắt buộc';
     } else if (!emailRegex.test(formData.email)) {
-      errors.email = 'Please enter a valid email address';
+      errors.email = 'Vui lòng nhập địa chỉ email hợp lệ';
     }
     
-    if (!formData.dateOfBirth) errors.dateOfBirth = 'Date of birth is required';
-    if (!formData.hometown.trim()) errors.hometown = 'Hometown is required';
+    if (!formData.dateOfBirth) errors.dateOfBirth = 'Ngày sinh là bắt buộc';
+    if (!formData.hometown.trim()) errors.hometown = 'Quê quán là bắt buộc';
     
     // Score validations
-    const validateScore = (score, field) => {
+    const validateScore = (score, field, fieldName) => {
       const numScore = parseFloat(score);
       if (score === '') {
-        errors[field] = `${field.charAt(0).toUpperCase() + field.slice(1, -5)} score is required`;
+        errors[field] = `Điểm ${fieldName} là bắt buộc`;
       } else if (isNaN(numScore) || numScore < 0 || numScore > 10) {
-        errors[field] = 'Score must be a number between 0 and 10';
+        errors[field] = 'Điểm phải là số từ 0 đến 10';
       }
     };
     
-    validateScore(formData.mathScore, 'mathScore');
-    validateScore(formData.literatureScore, 'literatureScore');
-    validateScore(formData.englishScore, 'englishScore');
+    validateScore(formData.mathScore, 'mathScore', 'Toán');
+    validateScore(formData.literatureScore, 'literatureScore', 'Văn');
+    validateScore(formData.englishScore, 'englishScore', 'Anh');
     
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
@@ -62,6 +76,13 @@ const AddStudent = () => {
       ...formData,
       [name]: value
     });
+    
+    if (formErrors[name]) {
+      setFormErrors({
+        ...formErrors,
+        [name]: ''
+      });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -71,10 +92,11 @@ const AddStudent = () => {
     
     try {
       setLoading(true);
+      setError(null);
       await mockApiService.createStudent(formData);
       navigate('/students');
     } catch (err) {
-      setError('Failed to add student. Please try again later.');
+      setError('Không thể thêm sinh viên. Vui lòng thử lại sau.');
       console.error('Error adding student:', err);
     } finally {
       setLoading(false);
@@ -82,141 +104,163 @@ const AddStudent = () => {
   };
 
   return (
-    <div className="add-student-container">
-      <h2>Add New Student</h2>
-      
-      {error && <div className="error-message">{error}</div>}
-      
-      <form onSubmit={handleSubmit} className="student-form">
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="firstName">First Name</label>
-            <input
-              type="text"
-              id="firstName"
-              name="firstName"
-              value={formData.firstName}
-              onChange={handleChange}
-              className={formErrors.firstName ? 'error' : ''}
-            />
-            {formErrors.firstName && <span className="error-text">{formErrors.firstName}</span>}
-          </div>
-          
-          <div className="form-group">
-            <label htmlFor="lastName">Last Name</label>
-            <input
-              type="text"
-              id="lastName"
-              name="lastName"
-              value={formData.lastName}
-              onChange={handleChange}
-              className={formErrors.lastName ? 'error' : ''}
-            />
-            {formErrors.lastName && <span className="error-text">{formErrors.lastName}</span>}
-          </div>
-        </div>
+    <Container maxWidth="md">
+      <Box sx={{ py: 3 }}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          ➕ Thêm sinh viên mới
+        </Typography>
         
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className={formErrors.email ? 'error' : ''}
-            />
-            {formErrors.email && <span className="error-text">{formErrors.email}</span>}
-          </div>
-          
-          <div className="form-group">
-            <label htmlFor="dateOfBirth">Date of Birth</label>
-            <input
-              type="date"
-              id="dateOfBirth"
-              name="dateOfBirth"
-              value={formData.dateOfBirth}
-              onChange={handleChange}
-              className={formErrors.dateOfBirth ? 'error' : ''}
-            />
-            {formErrors.dateOfBirth && <span className="error-text">{formErrors.dateOfBirth}</span>}
-          </div>
-        </div>
+        {error && (
+          <Alert severity="error" sx={{ mb: 3 }}>
+            {error}
+          </Alert>
+        )}
         
-        <div className="form-group">
-          <label htmlFor="hometown">Hometown</label>
-          <input
-            type="text"
-            id="hometown"
-            name="hometown"
-            value={formData.hometown}
-            onChange={handleChange}
-            className={formErrors.hometown ? 'error' : ''}
-          />
-          {formErrors.hometown && <span className="error-text">{formErrors.hometown}</span>}
-        </div>
-        
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="mathScore">Math Score (0-10)</label>
-            <input
-              type="number"
-              id="mathScore"
-              name="mathScore"
-              min="0"
-              max="10"
-              step="0.1"
-              value={formData.mathScore}
-              onChange={handleChange}
-              className={formErrors.mathScore ? 'error' : ''}
-            />
-            {formErrors.mathScore && <span className="error-text">{formErrors.mathScore}</span>}
-          </div>
-          
-          <div className="form-group">
-            <label htmlFor="literatureScore">Literature Score (0-10)</label>
-            <input
-              type="number"
-              id="literatureScore"
-              name="literatureScore"
-              min="0"
-              max="10"
-              step="0.1"
-              value={formData.literatureScore}
-              onChange={handleChange}
-              className={formErrors.literatureScore ? 'error' : ''}
-            />
-            {formErrors.literatureScore && <span className="error-text">{formErrors.literatureScore}</span>}
-          </div>
-          
-          <div className="form-group">
-            <label htmlFor="englishScore">English Score (0-10)</label>
-            <input
-              type="number"
-              id="englishScore"
-              name="englishScore"
-              min="0"
-              max="10"
-              step="0.1"
-              value={formData.englishScore}
-              onChange={handleChange}
-              className={formErrors.englishScore ? 'error' : ''}
-            />
-            {formErrors.englishScore && <span className="error-text">{formErrors.englishScore}</span>}
-          </div>
-        </div>
-        
-        <div className="form-actions">
-          <button type="button" onClick={() => navigate('/students')} className="cancel-btn">
-            Cancel
-          </button>
-          <button type="submit" className="submit-btn" disabled={loading}>
-            {loading ? 'Saving...' : 'Save Student'}
-          </button>
-        </div>
-      </form>
-    </div>
+        <Card>
+          <CardContent>
+            <Box component="form" onSubmit={handleSubmit}>
+              <Grid container spacing={3}>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Họ"
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    error={!!formErrors.firstName}
+                    helperText={formErrors.firstName}
+                    required
+                  />
+                </Grid>
+                
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Tên"
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    error={!!formErrors.lastName}
+                    helperText={formErrors.lastName}
+                    required
+                  />
+                </Grid>
+                
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Email"
+                    name="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    error={!!formErrors.email}
+                    helperText={formErrors.email}
+                    required
+                  />
+                </Grid>
+                
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Ngày sinh"
+                    name="dateOfBirth"
+                    type="date"
+                    value={formData.dateOfBirth}
+                    onChange={handleChange}
+                    error={!!formErrors.dateOfBirth}
+                    helperText={formErrors.dateOfBirth}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    required
+                  />
+                </Grid>
+                
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Quê quán"
+                    name="hometown"
+                    value={formData.hometown}
+                    onChange={handleChange}
+                    error={!!formErrors.hometown}
+                    helperText={formErrors.hometown}
+                    required
+                  />
+                </Grid>
+                
+                <Grid item xs={12} sm={4}>
+                  <TextField
+                    fullWidth
+                    label="Điểm Toán (0-10)"
+                    name="mathScore"
+                    type="number"
+                    inputProps={{ min: 0, max: 10, step: 0.1 }}
+                    value={formData.mathScore}
+                    onChange={handleChange}
+                    error={!!formErrors.mathScore}
+                    helperText={formErrors.mathScore}
+                    required
+                  />
+                </Grid>
+                
+                <Grid item xs={12} sm={4}>
+                  <TextField
+                    fullWidth
+                    label="Điểm Văn (0-10)"
+                    name="literatureScore"
+                    type="number"
+                    inputProps={{ min: 0, max: 10, step: 0.1 }}
+                    value={formData.literatureScore}
+                    onChange={handleChange}
+                    error={!!formErrors.literatureScore}
+                    helperText={formErrors.literatureScore}
+                    required
+                  />
+                </Grid>
+                
+                <Grid item xs={12} sm={4}>
+                  <TextField
+                    fullWidth
+                    label="Điểm Anh (0-10)"
+                    name="englishScore"
+                    type="number"
+                    inputProps={{ min: 0, max: 10, step: 0.1 }}
+                    value={formData.englishScore}
+                    onChange={handleChange}
+                    error={!!formErrors.englishScore}
+                    helperText={formErrors.englishScore}
+                    required
+                  />
+                </Grid>
+                
+                <Grid item xs={12}>
+                  <Stack direction="row" spacing={2} justifyContent="flex-end">
+                    <Button
+                      variant="outlined"
+                      startIcon={<CancelIcon />}
+                      onClick={() => navigate('/students')}
+                      disabled={loading}
+                    >
+                      Hủy
+                    </Button>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      startIcon={loading ? <CircularProgress size={20} /> : <SaveIcon />}
+                      disabled={loading}
+                    >
+                      {loading ? 'Đang lưu...' : 'Lưu sinh viên'}
+                    </Button>
+                  </Stack>
+                </Grid>
+              </Grid>
+            </Box>
+          </CardContent>
+        </Card>
+      </Box>
+    </Container>
   );
 };
 
