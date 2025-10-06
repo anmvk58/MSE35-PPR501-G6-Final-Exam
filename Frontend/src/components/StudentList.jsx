@@ -1,18 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
-    Row,
-    Col,
     Card,
-    CardHeader,
-    CardBody,
-    CardTitle,
     Table,
     Button,
     Alert,
 } from 'reactstrap';
+import {
+    Box,
+    Stack,
+    Typography,
+    Container,
+    CircularProgress,
+    IconButton,
+    Paper,
+    TableContainer,
+    TableHead,
+    TableRow,
+    TableCell,
+    TableBody,
+} from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 
+import Sidebar from '../components/Sidebar'; // ✅ Import sidebar riêng của bạn
 import mockApiService from '../utils/mockApi';
+import AddStudent from "./AddStudent.jsx";
 
 const StudentList = () => {
     const [students, setStudents] = useState([]);
@@ -50,18 +64,16 @@ const StudentList = () => {
 
     if (loading) {
         return (
-            <Container maxWidth="lg">
-                <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
-                    <CircularProgress />
-                </Box>
-            </Container>
+            <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+                <CircularProgress />
+            </Box>
         );
     }
 
     if (error) {
         return (
             <Container maxWidth="lg">
-                <Alert severity="error" sx={{ mt: 2 }}>
+                <Alert color="danger" className="mt-3">
                     {error}
                 </Alert>
             </Container>
@@ -69,30 +81,31 @@ const StudentList = () => {
     }
 
     return (
-        <Container maxWidth="lg">
-            <Box sx={{ py: 3 }}>
+        <Box sx={{ display: 'flex', minHeight: '100vh' }}>
+            {/* ✅ Sidebar cố định bên trái */}
+            <Sidebar />
+
+            {/* ✅ Nội dung chính */}
+            <Box component="main" sx={{ flexGrow: 1, p: 3, backgroundColor: '#f8f9fa' }}>
                 <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
                     <Typography variant="h4" component="h1">
                         📚 Danh sách sinh viên
                     </Typography>
                     <Button
-                        component={Link}
+                        component={AddStudent}
                         to="/add-student"
-                        variant="contained"
+                        color="primary"
                         startIcon={<AddIcon />}
-                        sx={{ ml: 2 }}
                     >
                         Thêm sinh viên
                     </Button>
                 </Stack>
 
                 {students.length === 0 ? (
-                    <Card>
-                        <CardContent>
-                            <Typography variant="h6" textAlign="center" color="text.secondary">
-                                Không có sinh viên nào. Hãy thêm mới!
-                            </Typography>
-                        </CardContent>
+                    <Card className="p-4 text-center">
+                        <Typography variant="h6" color="text.secondary">
+                            Không có sinh viên nào. Hãy thêm mới!
+                        </Typography>
                     </Card>
                 ) : (
                     <Card>
@@ -114,17 +127,12 @@ const StudentList = () => {
                                 </TableHead>
                                 <TableBody>
                                     {students.map((student) => (
-                                        <TableRow
-                                            key={student.id}
-                                            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                        >
+                                        <TableRow key={student.id}>
                                             <TableCell>{student.id}</TableCell>
                                             <TableCell>{student.firstName}</TableCell>
                                             <TableCell>{student.lastName}</TableCell>
                                             <TableCell>{student.email}</TableCell>
-                                            <TableCell>
-                                                {new Date(student.dateOfBirth).toLocaleDateString()}
-                                            </TableCell>
+                                            <TableCell>{new Date(student.dateOfBirth).toLocaleDateString()}</TableCell>
                                             <TableCell>{student.hometown}</TableCell>
                                             <TableCell align="center">{student.mathScore}</TableCell>
                                             <TableCell align="center">{student.literatureScore}</TableCell>
@@ -156,7 +164,7 @@ const StudentList = () => {
                     </Card>
                 )}
             </Box>
-        </Container>
+        </Box>
     );
 };
 
