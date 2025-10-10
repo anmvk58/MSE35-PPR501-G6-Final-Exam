@@ -34,7 +34,7 @@ def root():
 @app.get("/api/students")
 def get_all_students(
     skip: int = Query(0, ge=0, description="Số record bỏ qua"),
-    limit: int = Query(100, ge=1, le=1000, description="Số record tối đa"),
+    limit: int = Query(100, ge=1, le=100000, description="Số record tối đa"),
     search: Optional[str] = Query(None, description="Từ khóa tìm kiếm")
 ):
     """
@@ -44,10 +44,16 @@ def get_all_students(
     - **search**: Tìm kiếm theo mã SV, họ tên, email, quê quán
     """
     if search:
-        students = db.search_students(search)
+        all_students = db.search_students(search)
     else:
-        students = db.get_all_students(skip=skip, limit=limit)
-    return Response(content=to_xml([s.dict() for s in students]), media_type="application/xml")
+        all_students = db.get_all_students(skip=0, limit=10**6)  # get all for count
+    total_count = len(all_students)
+    students = all_students[skip:skip+limit]
+    data = {
+        "total_count": total_count,
+        "items": [s.dict() for s in students]
+    }
+    return Response(content=to_xml(data), media_type="application/xml")
 
 @app.get("/api/students/{student_id}")
 def get_student(student_id: int):

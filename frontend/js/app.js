@@ -1,5 +1,11 @@
+// Refresh to first page and update display
+function refreshToFirstPage() {
+    currentPage = 0;
+    loadStudents(0);
+}
 // Global Variables
 let students = [];
+let totalStudents = 0;
 let currentPage = 0;
 let itemsPerPage = 10;
 let isEditMode = false;
@@ -54,17 +60,25 @@ function showToast(message, type = 'success') {
 }
 
 // Load all students
-async function loadStudents() {
+async function loadStudents(page = 0) {
     try {
-        showLoading(true);
-        students = await api.getAllStudents();
-        displayStudents();
-        showToast(`Đã tải ${students.length} sinh viên`, 'success');
+        showLoading(false);
+        let skip = page * itemsPerPage;
+        const limit = itemsPerPage;
+        const result = await api.getAllStudents({ skip, limit });
+        if (Array.isArray(result)) {
+            students = result;
+            totalStudents = students.length;
+        } else {
+            students = result.items || [];
+            totalStudents = Number(result.total_count) || students.length;
+        }
+    displayStudents();
     } catch (error) {
         showToast('Lỗi khi tải danh sách sinh viên: ' + error.message, 'error');
         console.error('Load students error:', error);
     } finally {
-        showLoading(false);
+        showLoading(false); 
     }
 }
 
@@ -86,11 +100,7 @@ function displayStudents() {
         return;
     }
 
-    const start = currentPage * itemsPerPage;
-    const end = start + itemsPerPage;
-    const paginatedStudents = students.slice(start, end);
-
-    paginatedStudents.forEach((student, index) => {
+    students.forEach((student, index) => {
         const row = document.createElement('tr');
         // Helper to safely extract string from XML-parsed value
         const safe = v => {
@@ -131,6 +141,7 @@ function displayStudents() {
     });
 
     updatePagination();
+    return currentPage;
 }
 
 // Format date
@@ -174,35 +185,32 @@ function formatScore(score) {
 
 // Update pagination
 function updatePagination() {
-    const totalPages = Math.ceil(students.length / itemsPerPage);
+    const totalPages = Math.ceil(totalStudents / itemsPerPage);
     const start = currentPage * itemsPerPage + 1;
-    const end = Math.min((currentPage + 1) * itemsPerPage, students.length);
-    
+    const end = Math.min((currentPage + 1) * itemsPerPage, totalStudents);
     document.getElementById('pageInfo').textContent = 
-        `Records ${start} to ${end} of ${students.length}`;
-
+        `Records ${start} to ${end} of ${totalStudents}`;
     // Enable/disable pagination buttons
     const prevBtn = document.querySelector('.pagination-btn:first-child');
     const nextBtn = document.querySelector('.pagination-btn:last-child');
-    
     if (prevBtn) prevBtn.disabled = currentPage === 0;
     if (nextBtn) nextBtn.disabled = currentPage >= totalPages - 1;
 }
 
 // Previous page
-function previousPage() {
+async function previousPage() {
     if (currentPage > 0) {
         currentPage--;
-        displayStudents();
+    await loadStudents(currentPage);
     }
 }
 
 // Next page
-function nextPage() {
-    const totalPages = Math.ceil(students.length / itemsPerPage);
+async function nextPage() {
+    const totalPages = Math.ceil(totalStudents / itemsPerPage);
     if (currentPage < totalPages - 1) {
         currentPage++;
-        displayStudents();
+        await loadStudents(currentPage);
     }
 }
 
@@ -224,16 +232,27 @@ async function editStudent(id) {
         currentEditId = id;
         
         document.getElementById('modalTitle').textContent = 'Chỉnh Sửa Sinh Viên';
-        document.getElementById('student_id').value = student.id;
-        document.getElementById('ma_so_sv').value = student.ma_so_sv || '';
-        document.getElementById('ho').value = student.ho || '';
-        document.getElementById('ten').value = student.ten || '';
-        document.getElementById('email').value = student.email || '';
-        document.getElementById('ngay_sinh').value = student.ngay_sinh || '';
-        document.getElementById('que_quan').value = student.que_quan || '';
-        document.getElementById('diem_toan').value = student.diem_toan || '';
-        document.getElementById('diem_van').value = student.diem_van || '';
-        document.getElementById('diem_anh').value = student.diem_anh || '';
+        // Helper to safely extract string from XML-parsed value
+        const safe = v => {
+            if (v === null || v === undefined || v === '') return '';
+            if (typeof v === 'object') {
+                if ('_text' in v) return v._text === '' ? '' : v._text;
+                if ('#text' in v) return v['#text'] === '' ? '' : v['#text'];
+                if (Array.isArray(v)) return v.map(safe).join(', ');
+                return Object.values(v).map(safe).join(', ');
+            }
+            return v;
+        };
+        document.getElementById('student_id').value = safe(student.id);
+        document.getElementById('ma_so_sv').value = safe(student.ma_so_sv);
+        document.getElementById('ho').value = safe(student.ho);
+        document.getElementById('ten').value = safe(student.ten);
+        document.getElementById('email').value = safe(student.email);
+        document.getElementById('ngay_sinh').value = safe(student.ngay_sinh);
+        document.getElementById('que_quan').value = safe(student.que_quan);
+        document.getElementById('diem_toan').value = safe(student.diem_toan);
+        document.getElementById('diem_van').value = safe(student.diem_van);
+        document.getElementById('diem_anh').value = safe(student.diem_anh);
         
         document.getElementById('studentModal').style.display = 'block';
     } catch (error) {
@@ -243,17 +262,37 @@ async function editStudent(id) {
 
 // Delete student
 async function deleteStudent(id) {
-    const student = students.find(s => s.id === id);
+    // Always treat id as number for comparison
+    const toNum = v => {
+        if (typeof v === 'object' && v !== null) {
+            if ('_text' in v) return Number(v._text);
+            if ('#text' in v) return Number(v['#text']);
+        }
+        return Number(v);
+    };
+    const numId = toNum(id);
+    const student = students.find(s => toNum(s.id) === numId);
     if (!student) return;
 
-    if (!confirm(`Bạn có chắc chắn muốn xóa sinh viên ${student.ho} ${student.ten}?`)) {
+    if (!confirm(`Bạn có chắc chắn muốn xóa sinh viên ${student.ho ? student.ho : ''} ${student.ten ? student.ten : ''}?`)) {
         return;
     }
 
     try {
-        await api.deleteStudent(id);
+        await api.deleteStudent(numId);
         showToast('Xóa sinh viên thành công!', 'success');
-        await loadStudents();
+        // After delete, reload and adjust currentPage if needed
+        // Get new total count
+        const result = await api.getAllStudents({ skip: 0, limit: 1 });
+        let newTotal = 0;
+        if (Array.isArray(result)) {
+            newTotal = result.length;
+        } else {
+            newTotal = Number(result.total_count) || 0;
+        }
+        const lastPage = Math.max(0, Math.ceil(newTotal / itemsPerPage) - 1);
+        if (currentPage > lastPage) currentPage = lastPage;
+        await loadStudents(currentPage);
     } catch (error) {
         showToast('Lỗi khi xóa sinh viên: ' + error.message, 'error');
     }
@@ -284,9 +323,8 @@ async function submitStudent(event) {
             await api.createStudent(studentData);
             showToast('Thêm sinh viên thành công!', 'success');
         }
-        
-        closeModal();
-        await loadStudents();
+    closeModal();
+    await loadStudents(currentPage);
     } catch (error) {
         showToast('Lỗi: ' + error.message, 'error');
     }
@@ -311,7 +349,20 @@ async function searchStudents() {
     
     try {
         if (keyword) {
-            students = await api.searchStudents(keyword);
+            let result = await api.searchStudents(keyword);
+            if (result && typeof result === 'object' && 'items' in result) {
+                students = Array.isArray(result.items) ? result.items : [];
+                totalStudents = Number(result.total_count) || students.length;
+            } else if (Array.isArray(result)) {
+                students = result;
+                totalStudents = students.length;
+            } else if (!result || (typeof result === 'object' && Object.keys(result).length === 0)) {
+                students = [];
+                totalStudents = 0;
+            } else {
+                students = [result];
+                totalStudents = 1;
+            }
             showToast(`Tìm thấy ${students.length} kết quả`, 'success');
         } else {
             await loadStudents();
@@ -384,60 +435,116 @@ function toggleSelectAll() {
 
 // Export to CSV
 function exportCSV() {
-    if (students.length === 0) {
-        showToast('Không có dữ liệu để xuất', 'warning');
-        return;
-    }
-
-    const headers = ['ID', 'Mã SV', 'Họ', 'Tên', 'Email', 'Ngày Sinh', 'Quê Quán', 'Điểm Toán', 'Điểm Văn', 'Điểm Anh', 'Điểm TB'];
-    const rows = students.map(s => [
-        s.id,
-        s.ma_so_sv || '',
-        s.ho || '',
-        s.ten || '',
-        s.email || '',
-        s.ngay_sinh || '',
-        s.que_quan || '',
-        s.diem_toan !== null ? s.diem_toan : '',
-        s.diem_van !== null ? s.diem_van : '',
-        s.diem_anh !== null ? s.diem_anh : '',
-        s.diem_trung_binh !== null ? s.diem_trung_binh : ''
-    ]);
-
-    let csvContent = headers.join(',') + '\n';
-    rows.forEach(row => {
-        csvContent += row.map(field => `"${field}"`).join(',') + '\n';
-    });
-
-    const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `students_${new Date().getTime()}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    showToast('Xuất CSV thành công!', 'success');
+    (async () => {
+        // Fetch all students from backend (no pagination)
+        const result = await api.getAllStudents({ skip: 0, limit: 100000 });
+        let allStudents = [];
+        if (Array.isArray(result)) {
+            allStudents = result;
+        } else if (result.items) {
+            allStudents = result.items;
+        }
+        if (allStudents.length === 0) {
+            showToast('Không có dữ liệu để xuất', 'warning');
+            return;
+        }
+        const headers = ['ID', 'Mã SV', 'Họ', 'Tên', 'Email', 'Ngày Sinh', 'Quê Quán', 'Điểm Toán', 'Điểm Văn', 'Điểm Anh', 'Điểm TB'];
+        // Helper to safely extract string from XML-parsed value
+        const safe = v => {
+            if (v === null || v === undefined || v === '') return '';
+            if (typeof v === 'object') {
+                if ('_text' in v) return v._text === '' ? '' : v._text;
+                if ('#text' in v) return v['#text'] === '' ? '' : v['#text'];
+                if (Array.isArray(v)) return v.map(safe).join(', ');
+                return Object.values(v).map(safe).join(', ');
+            }
+            return v;
+        };
+        const rows = allStudents.map(s => [
+            safe(s.id),
+            safe(s.ma_so_sv),
+            safe(s.ho),
+            safe(s.ten),
+            safe(s.email),
+            safe(s.ngay_sinh),
+            safe(s.que_quan),
+            safe(s.diem_toan),
+            safe(s.diem_van),
+            safe(s.diem_anh),
+            safe(s.diem_trung_binh)
+        ]);
+        let csvContent = headers.join(',') + '\n';
+        rows.forEach(row => {
+            csvContent += row.map(field => `"${field}"`).join(',') + '\n';
+        });
+        const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', `students_${new Date().getTime()}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showToast('Xuất CSV thành công!', 'success');
+    })();
 }
 
 // Print preview
 function printPreview() {
-    const printWindow = window.open('', '', 'height=600,width=800');
-    printWindow.document.write('<html><head><title>Danh Sách Sinh Viên</title>');
-    printWindow.document.write('<style>');
-    printWindow.document.write('body { font-family: Arial, sans-serif; }');
-    printWindow.document.write('table { width: 100%; border-collapse: collapse; }');
-    printWindow.document.write('th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }');
-    printWindow.document.write('th { background-color: #34495e; color: white; }');
-    printWindow.document.write('h1 { text-align: center; color: #2c3e50; }');
-    printWindow.document.write('</style></head><body>');
-    printWindow.document.write('<h1>DANH SÁCH SINH VIÊN</h1>');
-    printWindow.document.write(document.getElementById('studentsTable').outerHTML);
-    printWindow.document.write('</body></html>');
-    printWindow.document.close();
-    printWindow.print();
+    (async () => {
+        // Fetch all students from backend (no pagination)
+        const result = await api.getAllStudents({ skip: 0, limit: 100000 });
+        let allStudents = [];
+        if (Array.isArray(result)) {
+            allStudents = result;
+        } else if (result.items) {
+            allStudents = result.items;
+        }
+        // Helper to safely extract string from XML-parsed value
+        const safe = v => {
+            if (v === null || v === undefined || v === '') return '';
+            if (typeof v === 'object') {
+                if ('_text' in v) return v._text === '' ? '' : v._text;
+                if ('#text' in v) return v['#text'] === '' ? '' : v['#text'];
+                if (Array.isArray(v)) return v.map(safe).join(', ');
+                return Object.values(v).map(safe).join(', ');
+            }
+            return v;
+        };
+        const headers = ['Mã SV', 'Họ', 'Tên', 'Email', 'Ngày Sinh', 'Quê Quán', 'Điểm Toán', 'Điểm Văn', 'Điểm Anh', 'Điểm TB'];
+        let tableHtml = '<table style="width:100%;border-collapse:collapse;">';
+        tableHtml += '<thead><tr>' + headers.map(h => `<th style="border:1px solid #ddd;padding:8px;background:#34495e;color:white;">${h}</th>`).join('') + '</tr></thead><tbody>';
+        allStudents.forEach(s => {
+            tableHtml += '<tr>' + [
+                safe(s.ma_so_sv),
+                safe(s.ho),
+                safe(s.ten),
+                safe(s.email),
+                safe(s.ngay_sinh),
+                safe(s.que_quan),
+                safe(s.diem_toan),
+                safe(s.diem_van),
+                safe(s.diem_anh),
+                safe(s.diem_trung_binh)
+            ].map(f => `<td style="border:1px solid #ddd;padding:8px;">${f}</td>`).join('') + '</tr>';
+        });
+        tableHtml += '</tbody></table>';
+        const printWindow = window.open('', '', 'height=600,width=800');
+        printWindow.document.write('<html><head><title>Danh Sách Sinh Viên</title>');
+        printWindow.document.write('<style>');
+        printWindow.document.write('body { font-family: Arial, sans-serif; }');
+        printWindow.document.write('table { width: 100%; border-collapse: collapse; }');
+        printWindow.document.write('th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }');
+        printWindow.document.write('th { background-color: #34495e; color: white; }');
+        printWindow.document.write('h1 { text-align: center; color: #2c3e50; }');
+        printWindow.document.write('</style></head><body>');
+        printWindow.document.write('<h1>DANH SÁCH SINH VIÊN</h1>');
+        printWindow.document.write(tableHtml);
+        printWindow.document.write('</body></html>');
+        printWindow.document.close();
+        printWindow.print();
+    })();
 }
 
 // Toggle filter

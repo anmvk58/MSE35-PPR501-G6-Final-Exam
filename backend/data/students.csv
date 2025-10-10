@@ -8,7 +8,6 @@ id,ma_so_sv,ho,ten,email,ngay_sinh,que_quan,diem_toan,diem_van,diem_anh,diem_tru
 7,tung76,Trần,Tùng,tung76@example.com,2002-12-25,Hà Nội,5.2,7.5,8.8,7.17
 8,ha35,Đặng,Hà,ha35@example.com,2012-02-26,Bắc Ninh,5.7,9.1,9.8,8.2
 9,son44,Vũ,Sơn,son44@example.com,2008-10-19,Bình Dương,6.2,9.9,4.8,6.97
-10,hung73,Phạm,Hùng,hung73@example.com,2002-01-12,Cần Thơ,6.4,9.8,4.3,6.83
 11,thao30,Đỗ,Thảo,thao30@example.com,2013-07-09,Bình Dương,9.0,4.2,5.3,6.17
 12,binh47,Phan,Bình,binh47@example.com,2009-03-17,Đà Nẵng,9.8,7.1,8.9,8.6
 13,linh68,Phan,Linh,linh68@example.com,2011-09-10,Huế,6.1,6.3,4.2,5.53
@@ -100,3 +99,16 @@ id,ma_so_sv,ho,ten,email,ngay_sinh,que_quan,diem_toan,diem_van,diem_anh,diem_tru
 99,phuong08,Trần,Phương,phuong08@example.com,2015-11-11,Hà Nội,7.3,9.7,8.0,8.33
 100,hung01,Lê,Hùng,hung01@example.com,2019-04-01,Huế,6.8,7.9,9.0,7.9
 101,huyl1,Le,Huy,,,,,,,
+102,huyl11,alskdj,alksjd,alkjsd@gmail.com,,ád,1.0,2.0,3.0,2.0
+103,ád,ád,ád,,,,,,,
+104,qeweqweqw,qưeqweeqw,qewqeweqw,,,,,,,
+105,gágsd,sdfgfdsg,sfdgdsfg,,,,,,,
+106,dsfgdsfg,sdfgfdsg,sdfhfdsh,,,,,,,
+107,gsfdgfdsg,sfdgdsfg,sfdgfdsgdsf,,,,,,,
+108,sdfgfdsdsgf,gdfsgfdsgfds,sgfdgsfdgfds,,,,,,,
+111,duong,hsdjd,tranddh,sdjhsad@hasjd.hdhd,,,,,,
+113,hdjshs,hsddhsd,dssdjsdjf,,,,,,,
+117,aaaaaa,aaaaa,aaaaa,,,,10.0,10.0,10.0,10.0
+118,asdas,fasfasas,afasasfafsafs,,,,10.0,10.0,10.0,10.0
+119,fqfqasqwe,fqwfsaf,qwefasfa,,,,,,,
+120,gssdggsdgsd,gsdgsdsdgsgd,gsdgsggsdf,,,,,,,
