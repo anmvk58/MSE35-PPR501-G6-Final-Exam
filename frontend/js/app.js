@@ -92,23 +92,37 @@ function displayStudents() {
 
     paginatedStudents.forEach((student, index) => {
         const row = document.createElement('tr');
+        // Helper to safely extract string from XML-parsed value
+        const safe = v => {
+            if (v === null || v === undefined || v === '') return '-';
+            if (typeof v === 'object') {
+                // If object with _text or #text, return that
+                if ('_text' in v) return v._text === '' ? '-' : v._text;
+                if ('#text' in v) return v['#text'] === '' ? '-' : v['#text'];
+                // If array, join as string
+                if (Array.isArray(v)) return v.map(safe).join(', ');
+                // Otherwise, try to stringify
+                return Object.values(v).map(safe).join(', ');
+            }
+            return v;
+        };
         row.innerHTML = `
-            <td><input type="checkbox" class="student-checkbox" data-id="${student.id}"></td>
-            <td><strong>${student.ma_so_sv || '-'}</strong></td>
-            <td>${student.ho || '-'}</td>
-            <td>${student.ten || '-'}</td>
-            <td>${student.email || '-'}</td>
+            <td><input type="checkbox" class="student-checkbox" data-id="${safe(student.id)}"></td>
+            <td><strong>${safe(student.ma_so_sv)}</strong></td>
+            <td>${safe(student.ho)}</td>
+            <td>${safe(student.ten)}</td>
+            <td>${safe(student.email)}</td>
             <td>${formatDate(student.ngay_sinh)}</td>
-            <td>${student.que_quan || '-'}</td>
+            <td>${safe(student.que_quan)}</td>
             <td>${formatScore(student.diem_toan)}</td>
             <td>${formatScore(student.diem_van)}</td>
             <td>${formatScore(student.diem_anh)}</td>
             <td><strong style="color: #3498db;">${formatScore(student.diem_trung_binh)}</strong></td>
             <td>
-                <button class="btn btn-warning btn-sm" onclick="editStudent(${student.id})" title="Sửa">
+                <button class="btn btn-warning btn-sm" onclick="editStudent(${safe(student.id)})" title="Sửa">
                     <i class="fas fa-edit"></i>
                 </button>
-                <button class="btn btn-danger btn-sm" onclick="deleteStudent(${student.id})" title="Xóa">
+                <button class="btn btn-danger btn-sm" onclick="deleteStudent(${safe(student.id)})" title="Xóa">
                     <i class="fas fa-trash"></i>
                 </button>
             </td>
@@ -121,15 +135,41 @@ function displayStudents() {
 
 // Format date
 function formatDate(dateString) {
-    if (!dateString) return '-';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('vi-VN');
+    // Use safe() to extract string if needed
+    const safe = v => {
+        if (v === null || v === undefined) return '';
+        if (typeof v === 'object') {
+            if ('_text' in v) return v._text;
+            if ('#text' in v) return v['#text'];
+            if (Array.isArray(v)) return v.map(safe).join(', ');
+            return Object.values(v).map(safe).join(', ');
+        }
+        return v;
+    };
+    const str = safe(dateString);
+    if (!str) return '-';
+    const date = new Date(str);
+    return isNaN(date) ? '-' : date.toLocaleDateString('vi-VN');
 }
 
 // Format score
 function formatScore(score) {
-    if (score === null || score === undefined) return '-';
-    return score.toFixed(1);
+    // Use safe() to extract string if needed
+    const safe = v => {
+        if (v === null || v === undefined) return '';
+        if (typeof v === 'object') {
+            if ('_text' in v) return v._text;
+            if ('#text' in v) return v['#text'];
+            if (Array.isArray(v)) return v.map(safe).join(', ');
+            return Object.values(v).map(safe).join(', ');
+        }
+        return v;
+    };
+    const str = safe(score);
+    if (str === '') return '-';
+    const num = Number(str);
+    if (isNaN(num)) return '-';
+    return num.toFixed(1);
 }
 
 // Update pagination
@@ -287,33 +327,48 @@ async function searchStudents() {
 async function showStatistics() {
     try {
         const stats = await api.getStatistics();
-        
+        const safe = v => {
+            if (v === null || v === undefined || v === '') return '-';
+            if (typeof v === 'object') {
+                if ('_text' in v) return v._text === '' ? '-' : v._text;
+                if ('#text' in v) return v['#text'] === '' ? '-' : v['#text'];
+                if (Array.isArray(v)) return v.map(safe).join(', ');
+                return Object.values(v).map(safe).join(', ');
+            }
+            return v;
+        };
+        const formatStat = v => {
+            const str = safe(v);
+            if (str === '-' || str === '') return 'N/A';
+            const num = Number(str);
+            if (isNaN(num)) return 'N/A';
+            return num.toFixed(2);
+        };
         const statsContent = document.getElementById('statsContent');
         statsContent.innerHTML = `
             <div class="stats-grid">
                 <div class="stat-card success">
                     <h4>Tổng Sinh Viên</h4>
-                    <div class="stat-value">${stats.total_students}</div>
+                    <div class="stat-value">${safe(stats.total_students)}</div>
                 </div>
                 <div class="stat-card info">
                     <h4>Điểm TB Toán</h4>
-                    <div class="stat-value">${stats.avg_diem_toan ? stats.avg_diem_toan.toFixed(2) : 'N/A'}</div>
+                    <div class="stat-value">${formatStat(stats.avg_diem_toan)}</div>
                 </div>
                 <div class="stat-card warning">
                     <h4>Điểm TB Văn</h4>
-                    <div class="stat-value">${stats.avg_diem_van ? stats.avg_diem_van.toFixed(2) : 'N/A'}</div>
+                    <div class="stat-value">${formatStat(stats.avg_diem_van)}</div>
                 </div>
                 <div class="stat-card">
                     <h4>Điểm TB Anh</h4>
-                    <div class="stat-value">${stats.avg_diem_anh ? stats.avg_diem_anh.toFixed(2) : 'N/A'}</div>
+                    <div class="stat-value">${formatStat(stats.avg_diem_anh)}</div>
                 </div>
                 <div class="stat-card success">
                     <h4>Điểm TB Chung</h4>
-                    <div class="stat-value">${stats.avg_diem_trung_binh ? stats.avg_diem_trung_binh.toFixed(2) : 'N/A'}</div>
+                    <div class="stat-value">${formatStat(stats.avg_diem_trung_binh)}</div>
                 </div>
             </div>
         `;
-        
         document.getElementById('statsModal').style.display = 'block';
     } catch (error) {
         showToast('Lỗi khi tải thống kê: ' + error.message, 'error');

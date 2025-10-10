@@ -1,6 +1,45 @@
 // API Configuration
 const API_BASE_URL = 'http://localhost:8000/api';
 
+// Utility: Convert XML string to JS object/array
+function parseXML(xmlStr) {
+    const parser = new DOMParser();
+    const xml = parser.parseFromString(xmlStr, 'application/xml');
+    if (xml.querySelector('parsererror')) {
+        throw new Error('Error parsing XML');
+    }
+    function xmlToJson(node) {
+        // If text node
+        if (node.nodeType === 3) {
+            return node.nodeValue.trim();
+        }
+        // If element node
+        let obj = {};
+        if (node.children.length > 0) {
+            // Special: if all children are <item>, return array
+            const allItems = Array.from(node.children).every(c => c.tagName === 'item');
+            if (allItems) {
+                return Array.from(node.children).map(xmlToJson);
+            }
+            // If all children have same tag, treat as array
+            const childTag = node.children[0].tagName;
+            const allSame = Array.from(node.children).every(c => c.tagName === childTag);
+            if (allSame && node.children.length > 1) {
+                obj = Array.from(node.children).map(xmlToJson);
+            } else {
+                for (let child of node.children) {
+                    obj[child.tagName] = xmlToJson(child);
+                }
+            }
+        } else if (node.textContent) {
+            obj = node.textContent.trim();
+        }
+        return obj;
+    }
+    let root = xml.documentElement;
+    return xmlToJson(root);
+}
+
 // API Client Class
 class StudentAPI {
     constructor(baseUrl) {
@@ -12,7 +51,9 @@ class StudentAPI {
         const url = `${this.baseUrl}${endpoint}`;
         const config = {
             headers: {
-                'Content-Type': 'application/json',
+                'Accept': 'application/xml',
+                // Only set Content-Type for requests with a body (POST/PUT)
+                ...(options.body ? {'Content-Type': 'application/json'} : {}),
                 ...options.headers,
             },
             ...options,
@@ -20,13 +61,25 @@ class StudentAPI {
 
         try {
             const response = await fetch(url, config);
-            
+            const text = await response.text();
             if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.detail || 'An error occurred');
+                // Try to parse error from XML
+                try {
+                    const errorObj = parseXML(text);
+                    throw new Error(errorObj.detail || 'An error occurred');
+                } catch {
+                    throw new Error('An error occurred');
+                }
             }
-
-            return await response.json();
+            // Parse XML to JS
+            const data = parseXML(text);
+            // If root is array (list of <item>), return as is
+            if (Array.isArray(data)) return data;
+            // If root is object with 'item' array, return that
+            if (data.item && Array.isArray(data.item)) return data.item;
+            // If root is object with single 'item', wrap in array
+            if (data.item) return [data.item];
+            return data;
         } catch (error) {
             console.error('API Error:', error);
             throw error;
