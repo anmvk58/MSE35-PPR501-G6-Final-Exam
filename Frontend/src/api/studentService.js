@@ -36,7 +36,7 @@ function parseXML(xmlString) {
 
         return result;
     } catch (err) {
-        console.error("❌ XML parse error:", err);
+        console.error("XML parse error:", err);
         return [];
     }
 }
@@ -45,12 +45,12 @@ function parseXML(xmlString) {
 const getAllStudents = async () => {
     try {
         const response = await apiClient.get("/", { responseType: "text" });
-        console.log("📦 Raw XML response:", response.data);
+        console.log("Raw XML response:", response.data);
         const students = parseXML(response.data);
-        console.log("✅ Parsed students:", students);
+        console.log("Parsed students:", students);
         return students;
     } catch (error) {
-        console.error("❌ Error fetching students:", error);
+        console.error("Error fetching students:", error);
         return [];
     }
 };
@@ -63,18 +63,18 @@ const createStudent = async (studentData) => {
             ? dayjs(studentData.birth_date).format("YYYY-MM-DD")
             : null,
     };
-    console.log("📤 Sending new student:", formattedData); // 👈 THÊM LOG NÀY
+    console.log("Sending new student:", formattedData); 
     try {
         const response = await apiClient.post("/", formattedData);
-        console.log("✅ Created student:", response.data);
+        console.log("Created student:", response.data);
         return response;
     } catch (error) {
-        console.error("❌ Backend error detail:", error.response?.data || error.message);
+        console.error("Backend error detail:", error.response?.data || error.message);
         throw error;
     }
 };
 
-// 🧩 Cập nhật sinh viên
+// Cập nhật sinh viên
 const updateStudent = async (studentCode, studentData) => {
     const formattedData = {
         ...studentData,
@@ -82,11 +82,11 @@ const updateStudent = async (studentCode, studentData) => {
             ? dayjs(studentData.birth_date).format("YYYY-MM-DD")
             : null,
     };
-    console.log("✏️ Updating student:", formattedData);
+    console.log("Updating student:", formattedData);
     return apiClient.put(`/${studentCode}`, formattedData);
 };
 
-// 🧩 Xóa sinh viên
+// Xóa sinh viên
 const deleteStudent = (studentCode) => apiClient.delete(`/${studentCode}`);
 
 // Xuất tất cả hàm

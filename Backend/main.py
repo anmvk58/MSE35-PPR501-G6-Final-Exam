@@ -24,10 +24,11 @@ app.include_router(api_students.router)
 
 @app.get("/")
 def root():
-    """Endpoint gốc"""
+    """Root endpoint"""
     data = {
         "message": "Student Management API",
         "version": "1.0.0",
-        "docs": "/docs"
+        "docs": "/docs",
+        "author": "MSEHN35_Group_6"
     }
     return Response(content=to_xml(data), media_type="application/xml")

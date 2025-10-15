@@ -1,0 +1,101 @@
+Mã sinh viên,Họ và tên,Email,Ngày sinh,Quê quán,Điểm Toán,Điểm Văn,Điểm Anh
+MSE_001,Hanh Nguyen,nguyen.hanh.mse_001@example.com,24/11/2005,Hải Phòng,6.94,5.52,7.31
+MSE_002,Hieu Bui,bui.hieu.mse_002@example.com,10/1/2003,Nam Định,5.15,6.81,7.7
+MSE_003,Van Tran,tran.van.mse_003@example.com,20/6/2002,Cần Thơ,9.35,0.05,1.55
+MSE_004,Son Le,le.son.mse_004@example.com,18/7/2002,Hà Nội,0.91,4.9,4.53
+MSE_005,Hoa Vu,vu.hoa.mse_005@example.com,16/10/2003,Huế,3.25,0.22,8.96
+MSE_006,Son Bui,bui.son.mse_006@example.com,3/3/2004,Cần Thơ,9.76,7.43,5.37
+MSE_007,Khang Pham,pham.khang.mse_007@example.com,6/6/2005,Cần Thơ,6.2,7.21,8.16
+MSE_008,Binh Bui,bui.binh.mse_008@example.com,12/4/2003,Hải Phòng,5.07,4.14,1.64
+MSE_009,An Le,le.an.mse_009@example.com,13/5/2005,Hà Nội,5.54,8.42,6.57
+MSE_010,Tam Nguyen,nguyen.tam.mse_010@example.com,1/5/2004,Đà Nẵng,1.42,3.63,5.74
+MSE_011,Minh Pham,pham.minh.mse_011@example.com,18/9/2004,Hà Nội,6.5,7.13,9.26
+MSE_012,Trang Bui,bui.trang.mse_012@example.com,11/9/2004,Thanh Hóa,5.91,4.3,0.27
+MSE_013,Tuan Dang,dang.tuan.mse_013@example.com,13/10/2002,Hà Nội,3.49,2.43,0.09
+MSE_014,Van Le,le.van.mse_014@example.com,11/12/2004,Huế,2.72,8.58,7.08
+MSE_015,Van Tran,tran.van.mse_015@example.com,24/1/2004,Huế,0.01,4.46,8.38
+MSE_016,Trang Bui,bui.trang.mse_016@example.com,9/5/2002,Nam Định,5.8,9.98,2.99
+MSE_017,An Hoang,hoang.an.mse_017@example.com,22/10/2005,Đà Nẵng,1.14,0.32,9.97
+MSE_018,Hieu Vu,vu.hieu.mse_018@example.com,26/4/2004,Hà Nội,8.94,4.84,5.36
+MSE_019,Tuan Hoang,hoang.tuan.mse_019@example.com,12/7/2003,Cần Thơ,5.68,7.44,7.19
+MSE_020,Dung Hoang,hoang.dung.mse_020@example.com,17/4/2004,Hải Phòng,5.48,6.14,9.6
+MSE_021,Phuong Phan,phan.phuong.mse_021@example.com,21/11/2003,Hà Nội,8.19,9.89,1.77
+MSE_022,Tam Dang,dang.tam.mse_022@example.com,5/12/2004,Huế,7.43,3.89,7.28
+MSE_023,Long Tran,tran.long.mse_023@example.com,12/6/2004,Hải Phòng,5.84,8.04,6.89
+MSE_024,Khang Nguyen,nguyen.khang.mse_024@example.com,21/5/2005,Huế,5.59,1.59,6.74
+MSE_025,Van Le,le.van.mse_025@example.com,28/8/2005,Hải Phòng,0.27,3.22,2.79
+MSE_026,Tam Tran,tran.tam.mse_026@example.com,29/9/2005,Thanh Hóa,1.95,5.38,0.39
+MSE_027,Trang Bui,bui.trang.mse_027@example.com,13/7/2003,Đà Nẵng,9.6,5.96,8.94
+MSE_028,Hanh Tran,tran.hanh.mse_028@example.com,15/12/2004,Thanh Hóa,5.51,2.05,7.01
+MSE_029,Son Vo,vo.son.mse_029@example.com,24/4/2002,Hải Phòng,8.49,2.39,7.15
+MSE_030,Tam Tran,tran.tam.mse_030@example.com,1/4/2004,Nam Định,2.65,2.58,2.98
+MSE_031,Hieu Bui,bui.hieu.mse_031@example.com,12/11/2003,Hải Phòng,3.75,9.35,9.28
+MSE_032,Phuong Bui,bui.phuong.mse_032@example.com,11/10/2005,Đà Nẵng,0.67,1.86,0.89
+MSE_033,Thien Dang,dang.thien.mse_033@example.com,29/5/2004,Huế,6.81,5.85,5.81
+MSE_034,Trang Phan,phan.trang.mse_034@example.com,27/6/2005,Cần Thơ,4.28,1.41,6.87
+MSE_035,Thao Vu,vu.thao.mse_035@example.com,4/9/2002,Hải Phòng,8.7,7.11,8.57
+MSE_036,Tam Dang,dang.tam.mse_036@example.com,5/7/2002,Nam Định,6.21,7.72,0.42
+MSE_037,Son Vo,vo.son.mse_037@example.com,21/12/2004,Nam Định,5.27,2.07,3.7
+MSE_038,Van Bui,bui.van.mse_038@example.com,12/6/2005,Đà Nẵng,9.76,0.36,8.55
+MSE_039,Trang Phan,phan.trang.mse_039@example.com,27/7/2002,Hà Nội,5.94,8.65,2.28
+MSE_040,Hieu Hoang,hoang.hieu.mse_040@example.com,28/3/2005,Thanh Hóa,3.14,4.67,2.53
+MSE_041,Hanh Nguyen,nguyen.hanh.mse_041@example.com,14/6/2002,Huế,7.4,1.43,3.37
+MSE_042,Van Le,le.van.mse_042@example.com,2/1/2003,Đà Nẵng,3.91,0.52,9.44
+MSE_043,Trang Pham,pham.trang.mse_043@example.com,31/12/2004,Thanh Hóa,4.49,1.3,1.92
+MSE_044,Linh Phan,phan.linh.mse_044@example.com,1/11/2003,Hải Phòng,8.82,4.8,1.32
+MSE_045,Son Tran,tran.son.mse_045@example.com,17/5/2005,Nam Định,9.46,2.4,5.89
+MSE_046,Tam Vo,vo.tam.mse_046@example.com,3/12/2003,Nam Định,1.8,5.16,6.72
+MSE_047,Van Le,le.van.mse_047@example.com,24/10/2004,Nam Định,7.49,9.26,8.26
+MSE_048,Hieu Hoang,hoang.hieu.mse_048@example.com,9/3/2004,Đà Nẵng,2.62,3.86,8.52
+MSE_049,Thien Phan,phan.thien.mse_049@example.com,18/9/2005,Huế,5.82,2.93,1.33
+MSE_050,Thao Dang,dang.thao.mse_050@example.com,24/12/2002,Cần Thơ,6.39,8.03,2.72
+MSE_051,An Vo,vo.an.mse_051@example.com,4/2/2005,Nam Định,2.59,9.68,3.07
+MSE_052,Trang Vo,vo.trang.mse_052@example.com,16/9/2004,Đà Nẵng,8.19,0.17,0.83
+MSE_053,An Nguyen,nguyen.an.mse_053@example.com,1/6/2003,Đà Nẵng,3.37,2.94,2.54
+MSE_054,Son Vo,vo.son.mse_054@example.com,27/10/2003,Cần Thơ,5.25,0.23,5.53
+MSE_055,Tuan Dang,dang.tuan.mse_055@example.com,3/2/2002,Cần Thơ,0.99,2.99,1.24
+MSE_056,Hanh Phan,phan.hanh.mse_056@example.com,28/1/2002,Cần Thơ,1.88,3.89,0.55
+MSE_057,Tuan Bui,bui.tuan.mse_057@example.com,22/2/2005,Thanh Hóa,8.13,2.88,2.35
+MSE_058,Tuan Phan,phan.tuan.mse_058@example.com,4/10/2003,Huế,0.42,0.19,9.57
+MSE_059,Hanh Le,le.hanh.mse_059@example.com,6/8/2003,Nam Định,5.34,6.52,1.85
+MSE_060,Lan Tran,tran.lan.mse_060@example.com,3/5/2002,Hải Phòng,0.94,7.88,1.41
+MSE_061,Van Nguyen,nguyen.van.mse_061@example.com,28/10/2003,Hà Nội,1.4,9.88,8.24
+MSE_062,Binh Le,le.binh.mse_062@example.com,11/2/2003,Nam Định,7.88,2.6,9.5
+MSE_063,Lan Le,le.lan.mse_063@example.com,20/7/2003,Cần Thơ,0.45,3.07,2.32
+MSE_064,Phuong Hoang,hoang.phuong.mse_064@example.com,24/4/2004,Cần Thơ,3.98,8.7,4.09
+MSE_065,Long Hoang,hoang.long.mse_065@example.com,20/7/2003,Cần Thơ,6.4,7.41,5.17
+MSE_066,Khang Vo,vo.khang.mse_066@example.com,4/9/2003,Cần Thơ,9.52,8.66,4.76
+MSE_067,Lan Vu,vu.lan.mse_067@example.com,10/4/2003,Cần Thơ,4.96,8.16,7.56
+MSE_068,Thao Bui,bui.thao.mse_068@example.com,10/1/2002,Cần Thơ,4.27,0.98,0.25
+MSE_069,Tam Nguyen,nguyen.tam.mse_069@example.com,23/10/2003,Cần Thơ,3.71,4.89,9.38
+MSE_070,Hanh Hoang,hoang.hanh.mse_070@example.com,26/11/2002,Đà Nẵng,4.46,1.12,6.75
+MSE_071,Thao Dang,dang.thao.mse_071@example.com,9/4/2005,Hà Nội,8.16,2.07,5.08
+MSE_072,An Bui,bui.an.mse_072@example.com,15/9/2004,Thanh Hóa,-,-,-
+MSE_073,Phuong Le,le.phuong.mse_073@example.com,29/7/2004,Nam Định,0.69,7.6,-
+MSE_074,Tuan Vo,vo.tuan.mse_074@example.com,8/1/2005,Huế,-,5.42,8.64
+MSE_075,Long Pham,pham.long.mse_075@example.com,14/1/2002,Nam Định,6.59,2.54,-
+MSE_076,Long Hoang,hoang.long.mse_076@example.com,26/4/2005,Hà Nội,-,-,2.01
+MSE_077,Thien Vo,vo.thien.mse_077@example.com,17/5/2003,Nam Định,4.41,4.39,9.26
+MSE_078,Hieu Le,le.hieu.mse_078@example.com,30/1/2003,Hải Phòng,0.06,0.67,6.15
+MSE_079,Tuan Le,le.tuan.mse_079@example.com,29/1/2003,Thanh Hóa,-,3.75,-
+MSE_080,Binh Bui,bui.binh.mse_080@example.com,14/4/2005,Hà Nội,-,6.68,-
+MSE_081,Hoa Tran,tran.hoa.mse_081@example.com,21/11/2003,Cần Thơ,-,-,0.25
+MSE_082,Tam Dang,dang.tam.mse_082@example.com,1/9/2004,Nam Định,0.9,-,3.79
+MSE_083,Trang Hoang,hoang.trang.mse_083@example.com,27/8/2002,Huế,7.79,-,-
+MSE_084,Tam Hoang,hoang.tam.mse_084@example.com,28/3/2002,Đà Nẵng,-,-,-
+MSE_085,Phuong Hoang,hoang.phuong.mse_085@example.com,2/2/2004,Hà Nội,-,4.52,9.42
+MSE_086,Tuan Dang,dang.tuan.mse_086@example.com,1/9/2003,Hải Phòng,2.33,9.36,9.5
+MSE_087,Binh Dang,dang.binh.mse_087@example.com,19/4/2004,Hải Phòng,-,-,7.58
+MSE_088,Lan Hoang,hoang.lan.mse_088@example.com,30/9/2002,Huế,4.23,-,7.19
+MSE_089,Minh Vo,vo.minh.mse_089@example.com,8/3/2004,Nam Định,8.95,3.73,-
+MSE_090,Thao Nguyen,nguyen.thao.mse_090@example.com,4/5/2005,Huế,-,-,7.77
+MSE_091,Long Le,le.long.mse_091@example.com,7/5/2003,Hải Phòng,8.18,5.86,8.87
+MSE_092,Khang Tran,tran.khang.mse_092@example.com,28/10/2004,Nam Định,-,-,4.97
+MSE_093,An Vo,vo.an.mse_093@example.com,12/12/2003,Cần Thơ,2.37,-,-
+MSE_094,Hanh Hoang,hoang.hanh.mse_094@example.com,27/10/2003,Nam Định,3.82,3.67,4.46
+MSE_095,Trang Vu,vu.trang.mse_095@example.com,9/5/2003,Thanh Hóa,5.03,7.41,7.19
+MSE_096,An Le,le.an.mse_096@example.com,5/5/2004,Nam Định,8.13,-,4.18
+MSE_097,Hieu Le,le.hieu.mse_097@example.com,29/12/2004,Thanh Hóa,8.48,-,-
+MSE_098,Van Phan,phan.van.mse_098@example.com,9/1/2003,Đà Nẵng,-,9.74,2.61
+MSE_099,Thien Phan,phan.thien.mse_099@example.com,2/7/2004,Thanh Hóa,-,6.42,5.65
+MSE_100,Khang Hoang,hoang.khang.mse_100@example.com,18/11/2005,Hải Phòng,4.64,-,-

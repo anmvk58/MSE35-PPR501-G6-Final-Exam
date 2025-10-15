@@ -8,7 +8,7 @@ def to_xml(data: Any) -> str:
 
 
 def model_to_dict(obj):
-    """Convert 1 SQLAlchemy object to Python dict"""
+    """Convert SQLAlchemy object to Python dict"""
     if obj is None:
         return None
     return {c.name: getattr(obj, c.name) for c in obj.__table__.columns}
